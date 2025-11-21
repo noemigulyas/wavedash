@@ -44,7 +44,7 @@ async fn handle_client(stream: TcpStream, buffer_sender: Sender<SampleBuffer>) {
 
     let mut samples = Vec::with_capacity(sample_count as usize);
 
-    for _ in 0..samples.capacity() {
+    for _ in 0..sample_count {
         let Ok(sample) = reader.read_f32().await else {
             return;
         };
