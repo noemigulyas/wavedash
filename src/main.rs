@@ -38,20 +38,22 @@ async fn handle_audio(mut receiver: Receiver<SampleBuffer>) {
 async fn handle_client(stream: TcpStream, buffer_sender: Sender<SampleBuffer>) {
     let mut reader = BufReader::new(stream);
 
-    let Ok(sample_count) = reader.read_u16().await else {
-        return;
-    };
-
-    let mut samples = Vec::with_capacity(sample_count as usize);
-
-    for _ in 0..sample_count {
-        let Ok(sample) = reader.read_f32().await else {
+    loop {
+        let Ok(sample_count) = reader.read_u16().await else {
             return;
         };
 
-        samples.push(sample);
-    }
+        let mut samples = Vec::with_capacity(sample_count as usize);
 
-    let sample_buffer = SampleBuffer::from(samples);
-    buffer_sender.send(sample_buffer).await.ok();
+        for _ in 0..sample_count {
+            let Ok(sample) = reader.read_f32().await else {
+                return;
+            };
+
+            samples.push(sample);
+        }
+
+        let sample_buffer = SampleBuffer::from(samples);
+        buffer_sender.send(sample_buffer).await.ok();
+    }
 }
