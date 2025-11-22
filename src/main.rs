@@ -39,6 +39,7 @@ async fn handle_client(stream: TcpStream, buffer_sender: Sender<SampleBuffer>) {
     let mut reader = BufReader::new(stream);
     let mut buf = Vec::new();
     reader.read_to_end(&mut buf).await.unwrap();
+    println!("{}", buf.len());
     let mut samples = Vec::with_capacity(buf.len() / 4);
     for chunk in buf.chunks_exact(4) {
         let arr = [chunk[0], chunk[1], chunk[2], chunk[3]];
